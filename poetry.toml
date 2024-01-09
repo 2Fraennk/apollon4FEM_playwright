@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "poetry-playwright"
+version = "0.1.0"
+description = ""
+authors = ["FABI"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.4.2"
+playwright = "^1.38.0"
+
+[tool.poetry.scripts]
+activeMQ = "activeMQ:activePage"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
