@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "poetry-playwright"
+name = "apollon4fem-playwright"
 version = "0.1.0"
 description = ""
 authors = ["FABI"]
@@ -7,8 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pytest = "^7.4.2"
-playwright = "^1.38.0"
+pytest = "^7.4.4"
+playwright = "^1.40.0"
+logging = "^0.4.9.6"
 
 [tool.poetry.scripts]
 activeMQ = "activeMQ:activePage"
@@ -16,4 +17,3 @@ activeMQ = "activeMQ:activePage"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-

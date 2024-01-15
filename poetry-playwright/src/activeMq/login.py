@@ -2,16 +2,21 @@ from playwright.sync_api import Page, expect
 import os
 import time
 
+import activeMq.properties
+from activeMq.properties import props
+
 now = time.time()
 
-stage = os.getenv("ACTIVEMQ_STAGE")
-title = os.getenv("ACTIVEMQ_TITLE")
+stage = activeMq.properties.props.stage
+title = activeMq.properties.props.title
 
-url = None
-if stage == "test":
-    url = f"https://esb-queue-test.mms-at-work.de:8162/admin"
-if stage == "prod":
-    url = f"https://esb-queue.mms-at-work.de:8162/admin"
+# url = None
+url = activeMq.properties.props.url
+# if stage == "test":
+#     url = f"https://esb-queue-test.mms-at-work.de:8162/admin"
+# if stage == "prod":
+#     url = f"https://esb-queue.mms-at-work.de:8162/admin"
+
 
 
 def run_login(page: Page) -> None:

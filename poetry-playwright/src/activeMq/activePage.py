@@ -1,8 +1,6 @@
-import time
+import time, os, logging
 
 from playwright.sync_api import Playwright, sync_playwright
-import os
-import logging
 
 from activeMq.login import run_login
 from activeMq.queue import go2dead_letter_queue, run_retry_dl, find_existing_dead_letter_queues, \
@@ -46,12 +44,14 @@ def run(playwright: Playwright) -> bool:
             if list(found_dead_letter_queues).__len__() > 0:
                 logger.info("Found some DLQs")
                 for i in found_dead_letter_queues:
-                    print("i: ", i)
+                    # print("i: ", i)
                     go2dead_letter_queue(page, i)
                     message_id_locator_list = list_messages_in_current_queue(page, i)
                     if message_id_locator_list.__len__() > 0:
                         logger.info(f"Found some messages in queue: {dlq_name}")
-                        # message_id_locator_list.
+                        for j in message_id_locator_list:
+                            j.highlight()
+                            time.sleep(1)
                 result = True
             else:
                 logger.info("Could not find any DLQs")

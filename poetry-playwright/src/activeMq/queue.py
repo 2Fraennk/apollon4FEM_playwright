@@ -58,6 +58,7 @@ def go2dead_letter_queue(page: Page, dlq_name) -> bool:
 
 def list_messages_in_current_queue(page: Page, dlq_name) -> list:
     logger.info(f"Trying to find message_id for existing dead message")
+    message_id_locator_list = []
     table_locator = page.locator("//table[@id='messages']")
     table_locator.highlight()
     # time.sleep(3)
@@ -78,9 +79,8 @@ def list_messages_in_current_queue(page: Page, dlq_name) -> list:
             # print(f"result: {result}")
             # print(f"search: {target}")
             if str(result).__contains__(target):
-                i.highlight()
-                time.sleep(1)
-                message_id_locator_list = []
+                # i.highlight()
+                # time.sleep(1)
                 message_id_locator_list.append(i)
 
     message_counter = table_locator.count()
@@ -170,17 +170,18 @@ def find_existing_dead_letter_queues(page: Page) -> {}:
     for i in dlqs_list_raw:
         i = i.strip()
         str_count = i.count("...")
-        print("str_count: ", str_count)
+        # print("str_count: ", str_count)
         if str_count == 0:
-            print(str_count)
+            # print(str_count)
+            pass
         elif str_count == 1:
-            print(str_count)
+            # print(str_count)
             i = str(i).rsplit('... ', 1)[1]
         # print(str(i))
         dlqs_list.append(i)
 
     # time.sleep(3)
 
-    print("dlq_list: ", dlqs_list)
+    # print("dlq_list: ", dlqs_list)
     # time.sleep(3)
     return dlqs_list
