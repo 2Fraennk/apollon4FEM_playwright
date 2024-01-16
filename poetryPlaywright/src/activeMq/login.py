@@ -1,21 +1,13 @@
 from playwright.sync_api import Page, expect
-import os
 import time
 
 import activeMq.properties
-from activeMq.properties import props
 
 now = time.time()
 
 stage = activeMq.properties.props.stage
 title = activeMq.properties.props.title
-
-# url = None
 url = activeMq.properties.props.url
-# if stage == "test":
-#     url = f"https://esb-queue-test.mms-at-work.de:8162/admin"
-# if stage == "prod":
-#     url = f"https://esb-queue.mms-at-work.de:8162/admin"
 
 
 

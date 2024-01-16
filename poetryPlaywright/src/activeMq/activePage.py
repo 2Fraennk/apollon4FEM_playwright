@@ -1,17 +1,17 @@
 import time, os, logging
 
 from playwright.sync_api import Playwright, sync_playwright
-
 from activeMq.login import run_login
 from activeMq.queue import go2dead_letter_queue, run_retry_dl, find_existing_dead_letter_queues, \
     list_messages_in_current_queue
+from activeMq.properties import props
 
 logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-user = os.getenv("ACTIVEMQ_USER")
-password = os.getenv("ACTIVEMQ_PASSWORD")
+user = props.ACTIVEMQ_USER
+password = props.ACTIVEMQ_PASSWORD
 headless = False
 
 
@@ -31,9 +31,9 @@ def run(playwright: Playwright) -> bool:
         # dlq_name_input = run_input_dlq_name()
         # message_id = run_input_message_id()
 
-        dlq_name_prefix = "DLQ."
-        dlq_name = f"{dlq_name_prefix}MyService.ResponseController.AD.Group.Update"
-        message_id = "all"  # "ID:q4deumsy0ca-34078-1702044626441-18:341:1:1:2"  #"all"  # "ID:q4deumsy0ca-34078-1702044626441-18:303:1:1:3"
+        dlq_name_prefix = "DLQ"
+        dlq_name = f"{dlq_name_prefix}."
+        message_id = "all"
 
         logger.info(f"{dlq_name}, {message_id}")
 
@@ -44,7 +44,6 @@ def run(playwright: Playwright) -> bool:
             if list(found_dead_letter_queues).__len__() > 0:
                 logger.info("Found some DLQs")
                 for i in found_dead_letter_queues:
-                    # print("i: ", i)
                     go2dead_letter_queue(page, i)
                     message_id_locator_list = list_messages_in_current_queue(page, i)
                     if message_id_locator_list.__len__() > 0:
