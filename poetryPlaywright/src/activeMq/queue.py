@@ -46,7 +46,6 @@ def go2dead_letter_queue(page: Page, dlq_name) -> bool:
                 result = True
                 break
             else:
-                print("test4")
                 logger.error(f"could not find the right dlq: searching for {page_title}")
                 result = False
         else:

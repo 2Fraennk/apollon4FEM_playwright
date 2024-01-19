@@ -6,9 +6,10 @@ from activeMq.queue import go2dead_letter_queue, run_retry_dl, find_existing_dea
     list_messages_in_current_queue
 from activeMq.properties import props
 
-logging.basicConfig(level='DEBUG')
+# logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
+logging.basicConfig(level='DEBUG',filename='playwrightActiveMq.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 user = props.ACTIVEMQ_USER
 password = props.ACTIVEMQ_PASSWORD
@@ -38,6 +39,7 @@ def run(playwright: Playwright) -> bool:
         logger.info(f"{dlq_name}, {message_id}")
 
         run_login(page)
+        page.on("dialog", lambda dialog: dialog.accept())
 
         if message_id == 'all':
             found_dead_letter_queues = find_existing_dead_letter_queues(page)
@@ -49,8 +51,9 @@ def run(playwright: Playwright) -> bool:
                     if message_id_locator_list.__len__() > 0:
                         logger.info(f"Found some messages in queue: {dlq_name}")
                         for j in message_id_locator_list:
-                            j.highlight()
+                            j.click()
                             time.sleep(1)
+                        # page.on("dialog", lambda dialog: dialog.dicline())
                 result = True
             else:
                 logger.info("Could not find any DLQs")

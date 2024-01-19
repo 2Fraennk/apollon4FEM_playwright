@@ -9,3 +9,6 @@ class props():
         url = "https://testhost.domain:8162/admin"
     if stage == "prod":
         url = "https://prodhost.domain:8162/admin"
+
+    def get_stage(self) -> str:
+        return self.stage
