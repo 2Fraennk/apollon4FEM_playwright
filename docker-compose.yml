@@ -1,0 +1,19 @@
+version: "3.8"
+
+networks:
+  monitoring:
+
+services:
+  playwright:
+    build:
+      context: .
+    image: playwright
+    restart: unless-stopped
+    container_name: playwright
+    hostname: playwright
+#    ports:
+#      - 880:80
+    networks:
+      - monitoring
+    volumes:
+      - $PWD/properties.py:/usr/local/apollon/poetryPlaywright/src/activemq/properties.py:ro
