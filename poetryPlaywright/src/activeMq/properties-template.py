@@ -1,14 +1,18 @@
-import os
-
 
 class props():
-    stage = os.getenv("ACTIVEMQ_STAGE")
-    title = os.getenv("ACTIVEMQ_TITLE")
+    stage = "Prod"
+    title = f"Esb.Broker-1.{stage} : ActiveMQ Console"
+    ACTIVEMQ_DOMAIN = ""
+    ACTIVEMQ_USER_TEST = ""
+    ACTIVEMQ_PASSWORD_TEST = ""
+    ACTIVEMQ_USER_PROD = ""
+    ACTIVEMQ_PASSWORD_PROD = ""
 
-    if stage == "test":
-        url = "https://testhost.domain:8162/admin"
-    if stage == "prod":
-        url = "https://prodhost.domain:8162/admin"
-
-    def get_stage(self) -> str:
-        return self.stage
+    if stage == "Test":
+        url = "https://"
+        ACTIVEMQ_USER = ACTIVEMQ_USER_TEST
+        ACTIVEMQ_PASSWORD = ACTIVEMQ_PASSWORD_TEST
+    if stage == "Prod":
+        url = "https://"
+        ACTIVEMQ_USER = ACTIVEMQ_USER_PROD
+        ACTIVEMQ_PASSWORD = ACTIVEMQ_PASSWORD_PROD

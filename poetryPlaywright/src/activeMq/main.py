@@ -2,8 +2,8 @@ import time, os, logging
 
 from playwright.sync_api import Playwright, sync_playwright
 from activeMq.login import run_login
-from activeMq.queue import go2dead_letter_queue, run_retry_dl, find_existing_dead_letter_queues, \
-    list_messages_in_current_queue
+from activeMq.queues import go2dead_letter_queue, find_existing_dead_letter_queues
+from activeMq.dlq import run_retry_dl, list_messages_in_current_queue
 from activeMq.properties import props
 
 # logging.basicConfig(level='DEBUG')
@@ -76,6 +76,15 @@ def run(playwright: Playwright) -> bool:
     finally:
         context.close()
         browser.close()
+
+    def run_input_dlq_name(dlq_name=None):
+        dlq_name = input("please enter dlq_name: ")
+    return dlq_name
+
+
+    def run_input_message_id(message_id=None):
+        message_id = input("please enter message_id: ")
+        return message_id
 
 
 if user is None or password is None:
