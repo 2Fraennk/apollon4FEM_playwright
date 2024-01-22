@@ -1,13 +1,13 @@
 from playwright.sync_api import Page, expect
 import time
 
-import activeMq.properties
+import activemq.properties
 
 now = time.time()
 
-stage = activeMq.properties.props.stage
-title = activeMq.properties.props.title
-url = activeMq.properties.props.url
+stage = activemq.properties.props.stage
+title = activemq.properties.props.title
+url = activemq.properties.props.url
 
 
 

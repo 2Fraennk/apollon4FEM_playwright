@@ -1,15 +1,15 @@
 from playwright.sync_api import Page
 import time, logging
-import activeMq.properties
+import activemq.properties
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 now = time.time()
 
-url = activeMq.properties.props.url
-stage = activeMq.properties.props.stage
-title = activeMq.properties.props.title
+url = activemq.properties.props.url
+stage = activemq.properties.props.stage
+title = activemq.properties.props.title
 
 
 def list_messages_in_current_queue(page: Page, dlq_name) -> list:
