@@ -18,6 +18,6 @@ RUN poetry install
 
 #ENTRYPOINT [ "/usr/bin/echo \"hello world\"" ]
 
-#CMD /usr/bin/python .activemq.main
+#CMD /usr/bin/python .activeMq.main
 
 CMD ["/usr/bin/sleep", "300"]
