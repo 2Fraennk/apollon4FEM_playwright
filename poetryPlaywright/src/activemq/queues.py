@@ -1,15 +1,15 @@
 from playwright.sync_api import Page
 import time, logging
-import activemq.properties
+import activeMq.properties
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 now = time.time()
 
-url = activemq.properties.props.url
-stage = activemq.properties.props.stage
-title = activemq.properties.props.title
+url = activeMq.properties.props.url
+stage = activeMq.properties.props.stage
+title = activeMq.properties.props.title
 
 
 def run_go2deadletter(page: Page, dlq_name, message_id) -> bool:

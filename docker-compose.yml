@@ -16,4 +16,4 @@ services:
     networks:
       - monitoring
     volumes:
-      - $PWD/properties.py:/usr/local/apollon/poetryPlaywright/src/activemq/properties.py:ro
+      - $PWD/poetryPlaywright/src/activemq/properties.py:/usr/local/apollon/poetryPlaywright/src/activemq/properties.py:ro

@@ -1,10 +1,10 @@
 import time, os, logging
 
 from playwright.sync_api import Playwright, sync_playwright
-from activemq.login import run_login
-from activemq.queues import go2dead_letter_queue, find_existing_dead_letter_queues
-from activemq.dlq import run_retry_dl, list_messages_in_current_queue
-from activemq.properties import props
+from activeMq.login import run_login
+from activeMq.queues import go2dead_letter_queue, find_existing_dead_letter_queues
+from activeMq.dlq import run_retry_dl, list_messages_in_current_queue
+from activeMq.properties import props
 
 # logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
