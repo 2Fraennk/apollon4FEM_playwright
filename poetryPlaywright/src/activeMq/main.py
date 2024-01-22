@@ -6,14 +6,11 @@ from activeMq.queues import go2dead_letter_queue, find_existing_dead_letter_queu
 from activeMq.dlq import run_retry_dl, list_messages_in_current_queue
 from activeMq.properties import props
 
-# logging.basicConfig(level='DEBUG')
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-logging.basicConfig(level='DEBUG',filename='playwrightActiveMq.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 user = props.ACTIVEMQ_USER
 password = props.ACTIVEMQ_PASSWORD
-headless = False
+headless = props.HEADLESS
 
 
 def run(playwright: Playwright) -> bool:

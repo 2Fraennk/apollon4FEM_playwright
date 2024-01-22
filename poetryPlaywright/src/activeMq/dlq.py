@@ -3,7 +3,6 @@ import time, logging
 import activeMq.properties
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 now = time.time()
 
