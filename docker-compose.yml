@@ -11,9 +11,8 @@ services:
     restart: unless-stopped
     container_name: playwright
     hostname: playwright
-#    ports:
-#      - 880:80
     networks:
       - monitoring
     volumes:
-      - $PWD/poetryPlaywright/src/activemq/properties.py:/usr/local/apollon/poetryPlaywright/src/activemq/properties.py:ro
+      - $PWD/poetryPlaywright/src/activeMq/properties.py:/usr/local/apollon/poetryPlaywright/src/activeMq/properties.py:ro
+      - $PWD/logs:/usr/local/apollon/poetryPlaywright/logs
