@@ -11,13 +11,10 @@ RUN python3 --version
 
 RUN git clone https://github.com/2Fraennk/apollon4FEM_playwright.git .
 RUN git switch dev
+RUN poetry config virtualenvs.create false
 RUN poetry install
-#RUN poetry activate
+RUN playwright install --with-deps firefox
 
-#EXPOSE 380
+WORKDIR /usr/local/apollon/poetryPlaywright/src
 
-#ENTRYPOINT [ "/usr/bin/echo \"hello world\"" ]
-
-#CMD /usr/bin/python .activeMq.main
-
-CMD ["/usr/bin/sleep", "300"]
+CMD ["python3", "-m", "activeMq.main"]
