@@ -15,7 +15,7 @@ headless = props.HEADLESS
 
 def run(playwright: Playwright) -> bool:
     """ Configure browser and run tests """
-    browser = playwright.firefox.launch(headless=headless)
+    browser = playwright.firefox.launch(headless=True)
     context = browser.new_context(
         http_credentials={
             "username": user,
