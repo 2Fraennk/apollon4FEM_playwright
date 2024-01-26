@@ -1,5 +1,8 @@
 FROM debian:stable-20240110
 
+# Custom cache invalidation
+ARG CACHEBUST=1
+
 WORKDIR /usr/local/apollon
 RUN apt-get update
 RUN apt-get install -y sudo
