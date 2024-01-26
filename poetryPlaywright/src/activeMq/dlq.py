@@ -1,6 +1,7 @@
 from playwright.sync_api import Page
 import time, logging
 import activeMq.properties
+import activeMq.queues
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ def list_messages_in_current_queue(page: Page, dlq_name) -> list:
     time.sleep(1)
     row_locator_count = row_locator.count()
     if row_locator_count > 0:
-        logger.info(f"There are messages to be deleted, counted: {row_locator_count}")
+        logger.info(f"There are messages to be handled, counted: {row_locator_count}")
         message_links = row_locator.get_by_role('link')
         message_links.highlight()
         time.sleep(1)
@@ -36,6 +37,13 @@ def list_messages_in_current_queue(page: Page, dlq_name) -> list:
             if str(result).__contains__(target4logging):
                 # message_ids_list.append(i.all_text_contents())
                 logger.info(f"found message: {i.all_text_contents()}")
+                i.click()
+                row_locator_bci = page.locator('tr', has=page.locator('td'))
+                row_locator_bci.highlight()
+                target_td = row_locator_bci.get_by_text('breadcrumbId', exact=True)
+                message_breadcrumbid = target_td.locator('//../td[2]')
+                logger.info(f"found associated breadcrumbID: {message_breadcrumbid.all_text_contents()}")
+                activeMq.queues.go2dead_letter_queue(page, dlq_name)
 
     message_counter = table_locator.count()
     logger.debug(f"message_id_locator_list: {message_id_locator_list}")
