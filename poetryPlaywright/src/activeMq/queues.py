@@ -65,4 +65,5 @@ def find_existing_dead_letter_queues(page: Page) -> {}:
         elif str_count == 1:
             i = str(i).rsplit('... ', 1)[1]
         dlqs_list.append(i)
+        logger.debug(f"Found DLQ: {i}")
     return dlqs_list
