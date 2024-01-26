@@ -15,7 +15,7 @@ headless = props.HEADLESS
 
 def run(playwright: Playwright) -> bool:
     """ Configure browser and run tests """
-    browser = playwright.firefox.launch(headless=True)
+    browser = playwright.firefox.launch(headless=bool(headless))
     context = browser.new_context(
         http_credentials={
             "username": user,
@@ -33,7 +33,7 @@ def run(playwright: Playwright) -> bool:
         dlq_name = f"{dlq_name_prefix}."
         message_id = "all"
 
-        logger.info(f"{dlq_name}, {message_id}")
+        logger.debug(f"given parameters: {dlq_name}, {message_id}")
 
         run_login(page)
         page.on("dialog", lambda dialog: dialog.accept())
@@ -41,16 +41,13 @@ def run(playwright: Playwright) -> bool:
         if message_id == 'all':
             found_dead_letter_queues = find_existing_dead_letter_queues(page)
             if list(found_dead_letter_queues).__len__() > 0:
-                logger.info("Found some DLQs")
                 for i in found_dead_letter_queues:
                     go2dead_letter_queue(page, i)
                     message_id_locator_list = list_messages_in_current_queue(page, i)
                     if message_id_locator_list.__len__() > 0:
-                        logger.info(f"Found some messages in queue: {dlq_name}")
                         for j in message_id_locator_list:
                             j.click()
                             time.sleep(1)
-                        # page.on("dialog", lambda dialog: dialog.dicline())
                 result = True
             else:
                 logger.info("Could not find any DLQs")
