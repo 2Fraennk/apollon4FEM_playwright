@@ -5,6 +5,7 @@ from FEM.petclinic.tests.init_client import *
 from FEM.petclinic.tests.login import *
 from FEM.petclinic.tests.error import *
 from FEM.petclinic.tests.owners import *
+from FEM.petclinic.tests.veterinarians import *
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,8 @@ def test_run(playwright: Playwright) -> None:
         test_owners(page)
 
         test_home(page)
+
+        test_veterinarians(page)
 
     except(RuntimeError, Exception):
         logger.error(f"Exception")
