@@ -1,1 +1,0 @@
-from confluence.startPage import run
