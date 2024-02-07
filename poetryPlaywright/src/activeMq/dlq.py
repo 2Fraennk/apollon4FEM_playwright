@@ -1,5 +1,5 @@
 from playwright.sync_api import Page
-import time, logging
+import time, logging, re
 import activeMq.properties
 import activeMq.queues
 
@@ -12,9 +12,9 @@ stage = activeMq.properties.props.stage
 title = activeMq.properties.props.title
 
 
-def list_messages_in_current_queue(page: Page, dlq_name) -> list:
+def get_messages_retry_locator_list_in_current_queue(page: Page, dlq_name) -> list:
     logger.info(f"Trying to find message_id for existing dead message")
-    message_id_locator_list = []
+    message_retry_locator_list = []
     # message_ids_list = []
     table_locator = page.locator("//table[@id='messages']")
     table_locator.highlight()
@@ -30,9 +30,7 @@ def list_messages_in_current_queue(page: Page, dlq_name) -> list:
 
         for i in message_links.all():
             result = i.get_attribute('href')
-            target = 'moveMessage.action'
-            if str(result).__contains__(target):
-                message_id_locator_list.append(i)
+
             target4logging = 'message.jsp'
             if str(result).__contains__(target4logging):
                 # message_ids_list.append(i.all_text_contents())
@@ -43,11 +41,35 @@ def list_messages_in_current_queue(page: Page, dlq_name) -> list:
                 target_td = row_locator_bci.get_by_text('breadcrumbId', exact=True)
                 message_breadcrumbid = target_td.locator('//../td[2]')
                 logger.info(f"found associated breadcrumbID: {message_breadcrumbid.all_text_contents()}")
-                activeMq.queues.go2dead_letter_queue(page, dlq_name)
+                row_locator_cec = page.locator('tr', has=page.locator('td'))
+                row_locator_cec.highlight()
+                target_td = row_locator_cec.get_by_text('CamelExceptionCaught', exact=True)
+                message_camel_exception_caught = target_td.locator('//../td[2]')
+                logger.info(
+                    f"found associated camel_exception_caught: {message_camel_exception_caught.all_text_contents()}")
+                if analyze_message_retry_opportunity(message_camel_exception_caught.all_text_contents()):
+                    target = 'moveMessage.action'
+                    if str(result).__contains__(target):
+                        logger.debug(f"adding message locator to retry list")
+                        message_retry_locator_list.append(i)
+
+        activeMq.queues.go2dead_letter_queue(page, dlq_name)
 
     message_counter = table_locator.count()
-    logger.debug(f"message_id_locator_list: {message_id_locator_list}")
-    return message_id_locator_list
+    logger.debug(f"message_id_locator_list: {message_retry_locator_list}")
+    return message_retry_locator_list
+
+
+def analyze_message_retry_opportunity(message_camel_exception_caught):
+    logger.info(f"Analyze message for retry opportunity. {message_camel_exception_caught}")
+    retry_opportunity = False
+    pattern = re.compile(r"([A-Za-z]+( [A-Za-z]+)+)", re.MULTILINE)
+    exception_input = str(message_camel_exception_caught[0])
+    if pattern.match(exception_input):
+        retry_opportunity = True
+        logger.info(f"Let's retry.")
+    return retry_opportunity
+
 
 def find_message_in_current_queue(page: Page, dlq_name, message_id) -> bool:
     logger.info(f"Trying to find message_id {message_id}")

@@ -3,7 +3,7 @@ import time, os, logging
 from playwright.sync_api import Playwright, sync_playwright
 from activeMq.login import run_login
 from activeMq.queues import go2dead_letter_queue, find_existing_dead_letter_queues
-from activeMq.dlq import run_retry_dl, list_messages_in_current_queue
+from activeMq.dlq import run_retry_dl, get_messages_retry_locator_list_in_current_queue
 from activeMq.properties import props
 
 logger = logging.getLogger(__name__)
@@ -43,9 +43,9 @@ def run(playwright: Playwright) -> bool:
             if list(found_dead_letter_queues).__len__() > 0:
                 for i in found_dead_letter_queues:
                     go2dead_letter_queue(page, i)
-                    message_id_locator_list = list_messages_in_current_queue(page, i)
-                    if message_id_locator_list.__len__() > 0:
-                        for j in message_id_locator_list:
+                    message_retry_locator_list = get_messages_retry_locator_list_in_current_queue(page, i)
+                    if message_retry_locator_list.__len__() > 0:
+                        for j in message_retry_locator_list:
                             j.click()
                             time.sleep(1)
                 result = True
@@ -84,7 +84,6 @@ def run(playwright: Playwright) -> bool:
 if user is None or password is None:
     logger.error("PLEASE SET *_USER AND *_PASSWORD VARIABLES")
     raise ValueError("PLEASE SET *_USER AND *_PASSWORD VARIABLES")
-    exit(1)
 
 with sync_playwright() as playwright:
     run(playwright)
