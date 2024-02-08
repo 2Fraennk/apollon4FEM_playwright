@@ -45,8 +45,8 @@ def run(playwright: Playwright) -> bool:
                     go2dead_letter_queue(page, i)
                     message_retry_locator_list = get_messages_retry_locator_list_in_current_queue(page, i)
                     if message_retry_locator_list.__len__() > 0:
-                        for j in message_retry_locator_list:
-                            j.click()
+                        for locator in message_retry_locator_list:
+                            locator.click()
                             time.sleep(1)
                 result = True
             else:
