@@ -24,36 +24,44 @@ def get_messages_retry_locator_list_in_current_queue(page: Page, dlq_name) -> li
     row_locator_count = row_locator.count()
     if row_locator_count > 0:
         logger.info(f"There are messages to be handled, counted: {row_locator_count}")
-        message_links = row_locator.get_by_role('link')
-        message_links.highlight()
+        message_links_in_row = row_locator.get_by_role('link')
+        message_links_in_row.highlight()
         time.sleep(1)
 
-        for i in message_links.all():
-            result = i.get_attribute('href')
+        for locator in message_links_in_row.all():
+            locator.highlight()
+            time.sleep(1)
+            result = locator.get_attribute('href')
 
-            target4logging = 'message.jsp'
-            if str(result).__contains__(target4logging):
-                # message_ids_list.append(i.all_text_contents())
-                logger.info(f"found message: {i.all_text_contents()}")
-                i.click()
+            target2check = 'message.jsp'
+            if str(result).__contains__(target2check):
+                # message_ids_list.append(locator.all_text_contents())
+                logger.info(f"found message: {locator.all_text_contents()}")
+                locator.click()
                 row_locator_bci = page.locator('tr', has=page.locator('td'))
                 row_locator_bci.highlight()
+                time.sleep(1)
+                target_td = row_locator_bci.get_by_text('Timestamp', exact=True)
+                message_timestamp = target_td.locator('//../td[2]')
+                logger.info(f"found associated timestamp: {message_timestamp.all_text_contents()}")
                 target_td = row_locator_bci.get_by_text('breadcrumbId', exact=True)
                 message_breadcrumbid = target_td.locator('//../td[2]')
                 logger.info(f"found associated breadcrumbID: {message_breadcrumbid.all_text_contents()}")
                 row_locator_cec = page.locator('tr', has=page.locator('td'))
                 row_locator_cec.highlight()
+                time.sleep(1)
                 target_td = row_locator_cec.get_by_text('CamelExceptionCaught', exact=True)
                 message_camel_exception_caught = target_td.locator('//../td[2]')
                 logger.info(
                     f"found associated camel_exception_caught: {message_camel_exception_caught.all_text_contents()}")
-                if analyze_message_retry_opportunity(message_camel_exception_caught.all_text_contents()):
-                    target = 'moveMessage.action'
-                    if str(result).__contains__(target):
-                        logger.debug(f"adding message locator to retry list")
-                        message_retry_locator_list.append(i)
+                retry_opportunity = analyze_message_retry_opportunity(message_camel_exception_caught.all_text_contents())
+                activeMq.queues.go2dead_letter_queue(page, dlq_name)
 
-        activeMq.queues.go2dead_letter_queue(page, dlq_name)
+            target = 'moveMessage.action'
+            if str(result).__contains__(target):
+                if retry_opportunity:
+                    logger.debug(f"adding message locator to retry list")
+                    message_retry_locator_list.append(locator)
 
     message_counter = table_locator.count()
     logger.debug(f"message_id_locator_list: {message_retry_locator_list}")
@@ -61,13 +69,20 @@ def get_messages_retry_locator_list_in_current_queue(page: Page, dlq_name) -> li
 
 
 def analyze_message_retry_opportunity(message_camel_exception_caught):
-    logger.info(f"Analyze message for retry opportunity. {message_camel_exception_caught}")
+    logger.info(f"message analysis for retry opportunity started.")
     retry_opportunity = False
-    pattern = re.compile(r"([A-Za-z]+( [A-Za-z]+)+)", re.MULTILINE)
     exception_input = str(message_camel_exception_caught[0])
-    if pattern.match(exception_input):
-        retry_opportunity = True
-        logger.info(f"Let's retry.")
+    pattern_list = [r"^.*(Die Anmeldung ist fehlgeschlagen. Die Lizenzüberprüfung ist fehlgeschlagen).*$",
+                    r"^.*(Hash not valid for use in specified state).*$",
+                    r"^.*(HTTP-500).*(Diese Aktion ist beim Status Erfasst nicht verf).*$"
+                    ]
+    for p in pattern_list:
+        # pattern = re.compile(r"^.*(HTTP-500).*(Diese Aktion ist beim Status Erfasst nicht verf).*$", re.DOTALL)
+        pattern = re.compile(fr"{p}", re.DOTALL)
+        if pattern.match(exception_input):
+            retry_opportunity = True
+            logger.info(f"Let's retry processing the current message.")
+    logger.info(f"message analysis finished.")
     return retry_opportunity
 
 
