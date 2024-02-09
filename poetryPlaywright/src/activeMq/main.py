@@ -14,8 +14,11 @@ headless = props.HEADLESS
 
 
 def run(playwright: Playwright) -> bool:
+    logger.info("Start program: activeMq")
     """ Configure browser and run tests """
+    logger.debug("Initialize browser")
     browser = playwright.firefox.launch(headless=bool(headless))
+    logger.debug("Initialize context")
     context = browser.new_context(
         http_credentials={
             "username": user,
@@ -26,11 +29,12 @@ def run(playwright: Playwright) -> bool:
     page = context.new_page()
 
     try:
+        # TODO: if necessary activate input to deliver dedicated message
         # dlq_name_input = run_input_dlq_name()
         # message_id = run_input_message_id()
 
-        dlq_name_prefix = "DLQ"
-        dlq_name = f"{dlq_name_prefix}."
+        dlq_name_prefix = "DLQ."
+        dlq_name = dlq_name_prefix
         message_id = "all"
 
         logger.debug(f"given parameters: {dlq_name}, {message_id}")
@@ -39,7 +43,7 @@ def run(playwright: Playwright) -> bool:
         page.on("dialog", lambda dialog: dialog.accept())
 
         if message_id == 'all':
-            found_dead_letter_queues = find_existing_dead_letter_queues(page)
+            found_dead_letter_queues = find_existing_dead_letter_queues(page, dlq_name_prefix)
             if list(found_dead_letter_queues).__len__() > 0:
                 for i in found_dead_letter_queues:
                     go2dead_letter_queue(page, i)
@@ -67,6 +71,9 @@ def run(playwright: Playwright) -> bool:
         else:
             logger.error("No message_id was given")
             result = False
+    except Exception as e:
+        logging.exception(f"Exception: {e}")
+        raise Exception(f"Exception: {e}")
     finally:
         context.close()
         browser.close()

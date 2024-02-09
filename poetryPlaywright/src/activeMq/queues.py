@@ -51,10 +51,10 @@ def go2dead_letter_queue(page: Page, dlq_name) -> bool:
             pass
     return result
 
-def find_existing_dead_letter_queues(page: Page) -> {}:
+def find_existing_dead_letter_queues(page: Page, dlq_name_prefix) -> {}:
     logger.info("Trying to find current existing dead letter queues")
     page.goto(f"{url}/queues.jsp")
-    dlqs = page.get_by_role("link", name="DLQ.", exact=False)
+    dlqs = page.get_by_role("link", name=dlq_name_prefix, exact=False)
     dlqs_list_raw = dlqs.evaluate_all("list => list.map(element => element.textContent)")
     dlqs_list = []
     for i in dlqs_list_raw:
