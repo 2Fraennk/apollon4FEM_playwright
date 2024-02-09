@@ -2,6 +2,7 @@ from playwright.sync_api import Page
 import time, logging, re
 import activeMq.properties
 import activeMq.queues
+from activeMq.properties import props
 
 logger = logging.getLogger(__name__)
 
@@ -72,10 +73,14 @@ def analyze_message_retry_opportunity(message_camel_exception_caught):
     logger.info(f"message analysis for retry opportunity started.")
     retry_opportunity = False
     exception_input = str(message_camel_exception_caught[0])
-    pattern_list = [r"^.*(Die Anmeldung ist fehlgeschlagen. Die Lizenzüberprüfung ist fehlgeschlagen).*$",
-                    r"^.*(Hash not valid for use in specified state).*$",
-                    r"^.*(HTTP-500).*(Diese Aktion ist beim Status Erfasst nicht verf).*$"
-                    ]
+    pattern_list = props.pattern_list
+    # pattern_list = [r"^.*(HTTP-401).*(Die Anmeldung ist fehlgeschlagen. Die Lizenzüberprüfung ist fehlgeschlagen).*$",
+    #                 r"^.*(HTTP-401).*(Hash not valid for use in specified state).*$",
+    #                 r"^.*(HTTP-401).*(Logon failed. Safe handle has been closed).*$",
+    #                 r"^.*(HTTP-500).*(was deadlocked on lock resources with another process and has been chosen as the deadlock victim.).*$",
+    #                 r"^.*(javax.ws.rs.ProcessingException: java.net.SocketTimeoutException: Read timed out).*$",
+    #                 r"^.*(HTTP-500).*(Diese Aktion ist beim Status).*(nicht verf).*(Zeigen Sie das Fenster erneut an und versuchen Sie es noch einmal).*$"
+    #                 ]
     for p in pattern_list:
         # pattern = re.compile(r"^.*(HTTP-500).*(Diese Aktion ist beim Status Erfasst nicht verf).*$", re.DOTALL)
         pattern = re.compile(fr"{p}", re.DOTALL)
