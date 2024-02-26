@@ -73,16 +73,9 @@ def analyze_message_retry_opportunity(message_camel_exception_caught):
     logger.info(f"message analysis for retry opportunity started.")
     retry_opportunity = False
     exception_input = str(message_camel_exception_caught[0])
-    pattern_list = props.pattern_list
-    # pattern_list = [r"^.*(HTTP-401).*(Die Anmeldung ist fehlgeschlagen. Die Lizenzüberprüfung ist fehlgeschlagen).*$",
-    #                 r"^.*(HTTP-401).*(Hash not valid for use in specified state).*$",
-    #                 r"^.*(HTTP-401).*(Logon failed. Safe handle has been closed).*$",
-    #                 r"^.*(HTTP-500).*(was deadlocked on lock resources with another process and has been chosen as the deadlock victim.).*$",
-    #                 r"^.*(javax.ws.rs.ProcessingException: java.net.SocketTimeoutException: Read timed out).*$",
-    #                 r"^.*(HTTP-500).*(Diese Aktion ist beim Status).*(nicht verf).*(Zeigen Sie das Fenster erneut an und versuchen Sie es noch einmal).*$"
-    #                 ]
+    pattern_list = props.search_pattern_list
+
     for p in pattern_list:
-        # pattern = re.compile(r"^.*(HTTP-500).*(Diese Aktion ist beim Status Erfasst nicht verf).*$", re.DOTALL)
         pattern = re.compile(fr"{p}", re.DOTALL)
         if pattern.match(exception_input):
             retry_opportunity = True
@@ -105,7 +98,6 @@ def find_message_in_current_queue(page: Page, dlq_name, message_id) -> bool:
         result = True
     else:
         result = False
-
     return result
 
 
@@ -113,6 +105,7 @@ def run_retry_dl(page: Page, dlq_name, message_id) -> bool:
     logger.info("Retry the dead letter processing")
     result_find_message_in_current_queue = find_message_in_current_queue(page, dlq_name, message_id)
 
+    # active handling popup dialogs by playwright
     page.once("dialog", lambda dialog: dialog.accept())
 
     # returned object must be unique to avoid multiple selections e.g. in case of a cropped message_id being found multiple times

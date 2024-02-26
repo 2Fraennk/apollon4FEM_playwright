@@ -50,7 +50,9 @@ def run(playwright: Playwright) -> bool:
                     message_retry_locator_list = get_messages_retry_locator_list_in_current_queue(page, i)
                     if message_retry_locator_list.__len__() > 0:
                         for locator in message_retry_locator_list:
+                            logger.info("Start message retry")
                             locator.click()
+                            logger.info(f"Retry for message locator {locator} done")
                             time.sleep(1)
                 result = True
             else:

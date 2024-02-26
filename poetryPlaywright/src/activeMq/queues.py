@@ -41,7 +41,7 @@ def go2dead_letter_queue(page: Page, dlq_name) -> bool:
             logger.debug(f"page_title:: {page_title}")
 
             if dlq_name in page_title:
-                logger.info(f"found the right dlq: title == {page_title}")
+                logger.debug(f"found the right dlq: title == {page_title}")
                 result = True
                 break
             else:
@@ -52,7 +52,7 @@ def go2dead_letter_queue(page: Page, dlq_name) -> bool:
     return result
 
 def find_existing_dead_letter_queues(page: Page, dlq_name_prefix) -> {}:
-    logger.info("Trying to find current existing dead letter queues")
+    logger.info("Start to find current existing dead letter queues")
     page.goto(f"{url}/queues.jsp")
     dlqs = page.get_by_role("link", name=dlq_name_prefix, exact=False)
     dlqs_list_raw = dlqs.evaluate_all("list => list.map(element => element.textContent)")
@@ -65,5 +65,5 @@ def find_existing_dead_letter_queues(page: Page, dlq_name_prefix) -> {}:
         elif str_count == 1:
             i = str(i).rsplit('... ', 1)[1]
         dlqs_list.append(i)
-        logger.debug(f"Found DLQ: {i}")
+        logger.info(f"Found DLQ: {i}")
     return dlqs_list

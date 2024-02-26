@@ -8,9 +8,13 @@ class props():
     ACTIVEMQ_USER_PROD = ""
     ACTIVEMQ_PASSWORD_PROD = ""
     HEADLESS = False
-    pattern_list = [r"^.*(HTTP-401).*.*$",
-                    r"^.*(HTTP-500).*(deadlocked).*$",
-                    ]
+    search_pattern_list = [r"^.*(HTTP-401).*(Die Anmeldung ist fehlgeschlagen. Die Lizenzüberprüfung ist fehlgeschlagen).*$",
+                           r"^.*(HTTP-401).*(Hash not valid for use in specified state).*$",
+                           r"^.*(HTTP-401).*(Logon failed. Safe handle has been closed).*$",
+                           r"^.*(HTTP-500).*(was deadlocked on lock resources with another process and has been chosen as the deadlock victim.).*$",
+                           r"^.*(javax.ws.rs.ProcessingException: java.net.SocketTimeoutException: Read timed out).*$",
+                           r"^.*(HTTP-500).*(Diese Aktion ist beim Status).*(nicht verf).*(Zeigen Sie das Fenster erneut an und versuchen Sie es noch einmal).*$"
+                           ]
 
     if stage == "Test":
         url = "https://"

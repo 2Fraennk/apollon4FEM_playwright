@@ -17,6 +17,6 @@ If a message could not be handled by retrying, there are reasons for that. The i
 a message could be handled successfully. But if there is no change to solve the issue, the message could be cleaned
 by delete.
 ## configure properties
-To set required properties you have to configure the properies inside 'properties.py'.
-Set the endpoint URL and credentials.
+Set required properties inside 'properties.py'.
+Use 'properties-template.py' as an example.
 
