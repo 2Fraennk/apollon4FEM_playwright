@@ -2,21 +2,20 @@ from playwright.sync_api import Page
 import time, logging, re
 import activeMq.properties
 import activeMq.queues
-from activeMq.properties import props
+from activeMq.properties import Props
 
 logger = logging.getLogger(__name__)
 
 now = time.time()
 
-url = activeMq.properties.props.url
-stage = activeMq.properties.props.stage
-title = activeMq.properties.props.title
+url = activeMq.properties.Props.url
+stage = activeMq.properties.Props.stage
+title = activeMq.properties.Props.title
 
 
 def get_messages_retry_locator_list_in_current_queue(page: Page, dlq_name) -> list:
     logger.info(f"Trying to find message_id for existing dead message")
     message_retry_locator_list = []
-    # message_ids_list = []
     table_locator = page.locator("//table[@id='messages']")
     table_locator.highlight()
     row_locator = table_locator.locator('tbody', has=page.locator('tr'))
@@ -36,36 +35,35 @@ def get_messages_retry_locator_list_in_current_queue(page: Page, dlq_name) -> li
 
             target2check = 'message.jsp'
             if str(result).__contains__(target2check):
-                # message_ids_list.append(locator.all_text_contents())
-                logger.info(f"found message: {locator.all_text_contents()}")
+                logger.info(f"Found message: {locator.all_text_contents()}")
                 locator.click()
                 row_locator_bci = page.locator('tr', has=page.locator('td'))
                 row_locator_bci.highlight()
                 time.sleep(1)
                 target_td = row_locator_bci.get_by_text('Timestamp', exact=True)
                 message_timestamp = target_td.locator('//../td[2]')
-                logger.info(f"found associated timestamp: {message_timestamp.all_text_contents()}")
+                logger.info(f"Found associated timestamp: {message_timestamp.all_text_contents()}")
                 target_td = row_locator_bci.get_by_text('breadcrumbId', exact=True)
                 message_breadcrumbid = target_td.locator('//../td[2]')
-                logger.info(f"found associated breadcrumbID: {message_breadcrumbid.all_text_contents()}")
+                logger.info(f"Found associated breadcrumbID: {message_breadcrumbid.all_text_contents()}")
                 row_locator_cec = page.locator('tr', has=page.locator('td'))
                 row_locator_cec.highlight()
                 time.sleep(1)
                 target_td = row_locator_cec.get_by_text('CamelExceptionCaught', exact=True)
                 message_camel_exception_caught = target_td.locator('//../td[2]')
                 logger.info(
-                    f"found associated camel_exception_caught: {message_camel_exception_caught.all_text_contents()}")
+                    f"Found associated camel_exception_caught: {message_camel_exception_caught.all_text_contents()}")
                 retry_opportunity = analyze_message_retry_opportunity(message_camel_exception_caught.all_text_contents())
                 activeMq.queues.go2dead_letter_queue(page, dlq_name)
 
             target = 'moveMessage.action'
             if str(result).__contains__(target):
                 if retry_opportunity:
-                    logger.debug(f"adding message locator to retry list")
+                    logger.debug(f"Adding message locator to retry list")
                     message_retry_locator_list.append(locator)
 
     message_counter = table_locator.count()
-    logger.debug(f"message_id_locator_list: {message_retry_locator_list}")
+    logger.debug(f"Message_id_locator_list: {message_retry_locator_list}")
     return message_retry_locator_list
 
 
@@ -73,14 +71,14 @@ def analyze_message_retry_opportunity(message_camel_exception_caught):
     logger.info(f"message analysis for retry opportunity started.")
     retry_opportunity = False
     exception_input = str(message_camel_exception_caught[0])
-    pattern_list = props.search_pattern_list
+    pattern_list = Props.search_pattern_list
 
     for p in pattern_list:
         pattern = re.compile(fr"{p}", re.DOTALL)
         if pattern.match(exception_input):
             retry_opportunity = True
             logger.info(f"Let's retry processing the current message.")
-    logger.info(f"message analysis finished.")
+    logger.info(f"Message analysis finished.")
     return retry_opportunity
 
 

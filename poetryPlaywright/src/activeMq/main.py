@@ -1,16 +1,19 @@
 import time, os, logging
 
 from playwright.sync_api import Playwright, sync_playwright
+
+from activeMq.logfile import Logfile
 from activeMq.login import run_login
 from activeMq.queues import go2dead_letter_queue, find_existing_dead_letter_queues
 from activeMq.dlq import run_retry_dl, get_messages_retry_locator_list_in_current_queue
-from activeMq.properties import props
+from activeMq.properties import Props
+from centraljira.MyJira import MyJira
 
 logger = logging.getLogger(__name__)
 
-user = props.ACTIVEMQ_USER
-password = props.ACTIVEMQ_PASSWORD
-headless = props.HEADLESS
+user = Props.ACTIVEMQ_USER
+password = Props.ACTIVEMQ_PASSWORD
+headless = Props.HEADLESS
 
 
 def run(playwright: Playwright) -> bool:
@@ -96,3 +99,16 @@ if user is None or password is None:
 
 with sync_playwright() as playwright:
     run(playwright)
+    # add jira client to add documentation of bot's run
+    jira_client = MyJira()
+    jira_connection = jira_client.init_jira_connection()
+    current_dlq_ticket_key = jira_client.get_current_dlq_ticket(jira_connection)
+    lf = Logfile()
+    start, end = lf.set_ticket_interval()
+    log_messages = lf.analyze_logfile(start, end)
+
+    while jira_client.get_current_dlq_ticket_status(current_dlq_ticket_key).name == "Erfasst":
+        jira_client.set_current_dlq_ticket_status(current_dlq_ticket_key, 11)
+    jira_client.add_comments_to_ticket(jira_connection, current_dlq_ticket_key, log_messages)
+    # while jira_client.get_current_dlq_ticket_status(current_dlq_ticket_key).name == "In Arbeit":
+    #     jira_client.set_current_dlq_ticket_status(current_dlq_ticket_key, 141)

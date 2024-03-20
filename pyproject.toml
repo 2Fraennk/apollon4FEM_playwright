@@ -11,6 +11,9 @@ pytest = "^7.4.4"
 playwright = "^1.40.0"
 logging = "^0.4.9.6"
 jira = "3.6.0"
+pymsteams = "^0.2.2"
+advertools = "0.14.2"
+pandas ="2.2.1"
 
 [tool.poetry.scripts]
 activeMQ = "activeMQ:activePage"

@@ -4,9 +4,9 @@ import activeMq.properties
 
 now = time.time()
 
-stage = activeMq.properties.props.stage
-title = activeMq.properties.props.title
-url = activeMq.properties.props.url
+stage = activeMq.properties.Props.stage
+title = activeMq.properties.Props.title
+url = activeMq.properties.Props.url
 
 
 

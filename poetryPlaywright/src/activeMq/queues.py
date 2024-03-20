@@ -6,9 +6,9 @@ logger = logging.getLogger(__name__)
 
 now = time.time()
 
-url = activeMq.properties.props.url
-stage = activeMq.properties.props.stage
-title = activeMq.properties.props.title
+url = activeMq.properties.Props.url
+stage = activeMq.properties.Props.stage
+title = activeMq.properties.Props.title
 
 
 def run_go2deadletter(page: Page, dlq_name, message_id) -> bool:
